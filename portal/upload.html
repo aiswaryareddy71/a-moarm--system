@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Applicant Portal - Hoarding License</title>
+    <style>
+        body { font-family: sans-serif; padding: 50px; background: #f4f7f6; }
+        .form-container { background: white; padding: 30px; border-radius: 10px; max-width: 500px; margin: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        input, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; }
+        button { background: #27ae60; color: white; border: none; padding: 15px; width: 100%; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>New License Application</h2>
+        <form id="uploadForm">
+            <input type="text" placeholder="Agency Name" required>
+            <input type="text" placeholder="License Number (e.g., LIC-101)" required>
+            <label>Stability Certificate (PDF):</label>
+            <input type="file" accept="application/pdf" required>
+            <label>Proposed Site Image (JPEG):</label>
+            <input type="file" accept="image/jpeg" required>
+            <button type="submit">Submit for AI Verification</button>
+        </form>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').onsubmit = async (e) => {
+            e.preventDefault();
+            // In a real system, you would use FormData to send files to the backend
+            document.getElementById('status').innerText = "Uploading to A-MAORM Backend... AI is verifying document completeness.";
+            // The backend would then run "Automated document verification"
+        };
+    </script>
+</body>
+</html>

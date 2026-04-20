@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+psycopg2-binary
+python-multipart  # Required for file uploads in the Applicant Portal
+ultralytics       # Required if running inference directly in the backend
+requests

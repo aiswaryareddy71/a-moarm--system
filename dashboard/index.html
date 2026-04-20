@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>A-MAORM Monitoring Dashboard</title>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin: 0; display: flex; font-family: 'Segoe UI', sans-serif; }
+        #map { height: 100vh; width: 70%; }
+        #sidebar { width: 30%; background: #2c3e50; color: white; padding: 20px; overflow-y: auto; }
+        .alert-card { background: #e74c3c; padding: 15px; margin-bottom: 10px; border-radius: 5px; border-left: 5px solid #c0392b; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div id="sidebar">
+        <h2>Live Violation Feed</h2>
+        <div id="alerts">Scanning city corridors...</div>
+    </div>
+
+    <script>
+        mapboxgl.accessToken = 'YOUR_MAPBOX_TOKEN';
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/dark-v10',
+            center: [77.5946, 12.9716],
+            zoom: 14
+        });
+
+        async function fetchViolations() {
+            try {
+                // Simulate vehicle movement by checking coordinates
+                const res = await fetch('YOUR_NGROK_URL/verify?lat=12.9716&lon=77.5946');
+                const data = await res.json();
+
+                if (data.status !== "LEGAL") {
+                    // Update UI Sidebar
+                    const div = document.createElement('div');
+                    div.className = 'alert-card';
+                    div.innerHTML = `<strong>${data.type}</strong><br>Fine: ₹${data.fine_amount || 'Pending'}`;
+                    document.getElementById('alerts').prepend(div);
+
+                    // Add Red Pin to Map
+                    new mapboxgl.Marker({ color: 'red' }).setLngLat([77.5946, 12.9716]).addTo(map);
+                }
+            } catch (e) { console.log("Connection lost to backend."); }
+        }
+        setInterval(fetchViolations, 5000); // Check every 5 seconds
+    </script>
+</body>
+</html>

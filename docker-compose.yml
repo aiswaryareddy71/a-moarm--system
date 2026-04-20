@@ -1,0 +1,24 @@
+%%writefile docker-compose.yml
+version: '3.8'
+services:
+  db:
+    image: postgis/postgis:14-3.2
+    environment:
+      POSTGRES_PASSWORD: Revanth
+      POSTGRES_DB: amaorm
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  backend:
+    build: ./backend
+    environment:
+      DB_HOST: db
+      DB_NAME: amaorm
+      DB_USER: postgres
+      DB_PASS: Revanth
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db

@@ -1,0 +1,11 @@
+%%writefile ai_engine/hoarding_dataset.yaml
+path: ../data
+train: images/train
+val: images/val
+names:
+  0: unipole
+  1: wall_wrap
+  2: gantry
+  3: kiosk
+  4: digital_screen
+  5: id_plate
