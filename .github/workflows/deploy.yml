@@ -20,6 +20,7 @@ jobs:
       - name: Build and Push
         uses: docker/build-push-action@v5
         with:
-          context: .
+          # This tells GitHub to look inside the backend folder
+          context: ./backend
           push: true
           tags: aiswarya64/amaorm-backend:latest
