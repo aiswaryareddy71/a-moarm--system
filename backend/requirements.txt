@@ -4,5 +4,4 @@ psycopg2-binary
 python-multipart
 ultralytics
 requests
-fpdf
-reprtlab
+reportlab
