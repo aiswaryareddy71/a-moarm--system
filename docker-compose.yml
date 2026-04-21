@@ -1,5 +1,5 @@
-%%writefile docker-compose.yml
 version: '3.8'
+
 services:
   db:
     image: postgis/postgis:14-3.2
@@ -13,12 +13,12 @@ services:
 
   backend:
     build: ./backend
+    ports:
+      - "8000:8000"
     environment:
       DB_HOST: db
       DB_NAME: amaorm
       DB_USER: postgres
       DB_PASS: Revanth
-    ports:
-      - "8000:8000"
     depends_on:
       - db

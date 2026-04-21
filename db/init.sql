@@ -8,13 +8,10 @@ CREATE TABLE legal_hoardings (
     geom GEOMETRY(Point, 4326),
     dimensions_width FLOAT,
     dimensions_height FLOAT,
-    stability_cert_expiry DATE,
-    base_rate_inr FLOAT DEFAULT 500.0
+    stability_cert_expiry DATE
 );
 
--- Fast spatial searching for real-time surveys
-CREATE INDEX hoarding_geo_idx ON legal_hoardings USING GIST (geom); [cite: 175, 675]
+CREATE INDEX hoarding_geo_idx ON legal_hoardings USING GIST (geom);
 
--- Seed a legal record for testing
 INSERT INTO legal_hoardings (agency_name, license_number, expiry_date, geom, dimensions_width, dimensions_height, stability_cert_expiry)
-VALUES ('Alpha Media', 'LIC-2026-001', '2026-12-31', ST_SetSRID(ST_Point(77.5946, 12.9716), 4326), 10.0, 5.0, '2026-11-01'); [cite: 678, 679]
+VALUES ('Alpha Media', 'LIC-2026-001', '2026-12-31', ST_SetSRID(ST_Point(77.5946, 12.9716), 4326), 10.0, 5.0, '2026-11-01');

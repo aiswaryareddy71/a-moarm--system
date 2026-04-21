@@ -2,37 +2,66 @@ import cv2
 from ultralytics import YOLO
 import requests
 
-# YOLO26 logic: High-speed detection without NMS bottleneck [cite: 58, 83, 619]
+# 1. Load the AI Model
+# Using yolov8n.pt for high-speed detection (YOLO26 logic)
 model = YOLO('yolov8n.pt') 
 
-# Your live API URL (update with your ngrok url)
-API_URL = "https://your-ngrok-url.ngrok-free.app/verify"
+# 2. Your API URL
+# Since you are running Docker locally, use http://localhost:8000
+# If using a server/ngrok, replace this URL
+API_URL = "http://localhost:8000/verify"
 
-cap = cv2.VideoCapture("street_video.mp4") [cite: 709]
+# 3. Access Camera (0 is default webcam)
+cap = cv2.VideoCapture(0)
+
+print("--- A-MAORM Survey System Live ---")
 
 while cap.isOpened():
     success, frame = cap.read()
-    if not success: break
+    if not success: 
+        break
 
-    # AI Detection: Identify hoarding type (Unipole, Gantry, etc.) [cite: 37, 621]
-    results = model(frame) 
+    # 4. AI Detection
+    results = model(frame, verbose=False) 
 
     for r in results:
         for box in r.boxes:
-            if box.cls == 11: # Class 11 = Billboard in general YOLO
-                # STAL Logic: Simulate zooming in on QR code/License Plate [cite: 114, 625]
-                simulated_qr = "LIC-2026-001"
+            # Class 11 is 'stop sign' in some models, but 'fire hydrant' or others in others.
+            # In standard COCO (yolov8n), Billboard isn't a default class. 
+            # For this simulation, we will detect 'refrigerator' (72) or 'tv' (62) 
+            # to act as a "Billboard" proxy unless you have a custom model.
+            
+            detected_class = int(box.cls[0])
+            
+            # Change '62' to the class ID you want to trigger the enforcement
+            if detected_class == 62 or detected_class == 11: 
+                print("Billboard/Structure Detected!")
                 
-                # Georeferencing: Pinpoint exact coordinates [cite: 140, 158]
+                # Simulated License/QR and GPS Georeferencing
+                simulated_qr = "LIC-2026-001"
                 curr_lat, curr_lon = 12.9716, 77.5946 
                 
-                # Enforcement: Send packet to Backend for verification [cite: 125, 724]
+                # 5. Enforcement: Send to Backend
                 try:
-                    payload = {'lat': curr_lat, 'lon': curr_lon, 'detected_w': 10.5, 'detected_h': 5.2, 'qr_code': simulated_qr}
-                    resp = requests.get(API_URL, params=payload)
+                    payload = {
+                        'lat': curr_lat, 
+                        'lon': curr_lon, 
+                        'w': 10.5, 
+                        'h': 5.2, 
+                        'qr_code': simulated_qr
+                    }
+                    resp = requests.get(API_URL, params=payload, timeout=1)
                     print(f"Enforcement Update: {resp.json()}")
                 except Exception as e:
-                    print(f"Sync Error: {e}")
+                    print(f"Sync Error: Ensure Docker is running. {e}")
 
-    cv2.imshow("A-MAORM Survey (60km/h)", frame) [cite: 60, 85]
-    if cv2.waitKey(1) & 0xFF == ord('q'): break
+    # 6. Display visual feed
+    # We use results[0].plot() to see the AI boxes on screen
+    annotated_frame = results[0].plot()
+    cv2.imshow("A-MAORM Survey (60km/h)", annotated_frame)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'): 
+        break
+
+cap.release()
+cv2.destroyAllWindows()
