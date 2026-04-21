@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: A-MAORM CI/CD Pipeline
 
 on:
   push:
@@ -14,7 +14,8 @@ jobs:
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
+          # Updated to match your GitHub Secret names exactly
+          username: ${{ secrets.DOCKER_USER_NAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Build and Push Backend
@@ -22,19 +23,27 @@ jobs:
         with:
           context: ./backend
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/amaorm-backend:latest
+          # This builds the image and tags it with your username
+          tags: ${{ secrets.DOCKER_USER_NAME }}/amaorm-backend:latest
 
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
-      - name: SSH and Deploy
+      - name: SSH and Deploy to Server
         uses: appleboy/ssh-action@master
         with:
+          # Make sure you have a secret named SERVER_IP
           host: ${{ secrets.SERVER_IP }}
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /app/a-maorm-system
+            mkdir -p ~/a-maorm-system
+            cd ~/a-maorm-system
+            
+            # This pulls the brand new image you just pushed
             docker-compose pull
             docker-compose up -d
+            
+            # Cleans up old images to save space
+            docker image prune -f
