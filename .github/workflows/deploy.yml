@@ -14,14 +14,12 @@ jobs:
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
-          # Updated to match your Docker Desktop screenshot
           username: aiswarya64
           password: ${{ secrets.DOCKER_TOKEN }}
 
-      - name: Build and Push Backend
+      - name: Build and Push
         uses: docker/build-push-action@v5
         with:
-          # Using '.' ensures it finds the Dockerfile in your folder
           context: .
           push: true
           tags: aiswarya64/amaorm-backend:latest
