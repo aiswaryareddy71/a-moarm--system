@@ -5,3 +5,4 @@ python-multipart
 ultralytics
 requests
 fpdf
+reprtlab
